@@ -1,0 +1,26 @@
+{
+  "weight": 10,
+  "icon": "minecraft:bundle",
+  "talents": [
+    {
+      "type": "meridian_origin_test:gift",
+      "params": {
+        "token": "merchant"
+      }
+    },
+    {
+      "type": "meridian_origin_test:mark",
+      "params": {
+        "value": 4
+      }
+    }
+  ],
+  "threats": [
+    {
+      "type": "meridian_origin_test:feud",
+      "params": {
+        "stages": 0
+      }
+    }
+  ]
+}

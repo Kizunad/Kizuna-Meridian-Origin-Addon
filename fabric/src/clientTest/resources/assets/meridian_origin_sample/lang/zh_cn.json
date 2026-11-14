@@ -1,0 +1,14 @@
+{
+  "origin.meridian_origin_sample.orphan.name": "灭门遗孤",
+  "origin.meridian_origin_sample.orphan.story": "你原是练武人家的孩子，幼时仇家一夜杀尽满门，单单留你一人活命。家传功法的头一卷你打小背熟，如今一上手就会。只是仇家知道留了活口，正揣着抢去的那卷功法，一拨比一拨厉害地找上门来，非得打退最后一拨，这笔账才算了断。",
+  "origin.meridian_origin_sample.orphan.talent.1": "开局会一卷家传功法",
+  "origin.meridian_origin_sample.orphan.threat.1": "仇家分三拨来寻仇，一拨比一拨强；打退第三拨了断",
+  "origin.meridian_origin_sample.farmer.name": "寻常农户",
+  "origin.meridian_origin_sample.farmer.story": "你是村里种地人家的孩子，祖上没出过修炼的人，身世清白见底。村里乡亲待你亲近，都当你是自家人，平日做买卖总肯给你让点价。你眼下半个仇家也没有，可日后修为要是高了，和旁人并无分别，少不得有人眼红找上门来。",
+  "origin.meridian_origin_sample.farmer.talent.1": "村民声望起点 +20：交易便宜",
+  "origin.meridian_origin_sample.apprentice.name": "药铺学徒",
+  "origin.meridian_origin_sample.apprentice.story": "你从小在药铺里跟着师父学熬药。师父传下的两张药方你记得一字不差，行药的头一卷功法也跟着学过。后来药方被女巫夺去，师父也没了，那女巫知道你还记着方子，正带人四处找你。唯有打败她才算了断，要是让她跑了，她还会再来。",
+  "origin.meridian_origin_sample.apprentice.talent.1": "开局会两张药方",
+  "origin.meridian_origin_sample.apprentice.talent.2": "开局会行药诀头一卷",
+  "origin.meridian_origin_sample.apprentice.threat.1": "夺方的女巫带人找你；打败她了断，让她跑了她会再来"
+}

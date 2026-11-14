@@ -1,0 +1,19 @@
+{
+  "parent": "meridian_progression:cultivation/cultivators",
+  "display": {
+    "icon": {
+      "id": "minecraft:name_tag"
+    },
+    "title": {
+      "translate": "advancements.meridian_origin.cultivators.origin.title"
+    },
+    "description": {
+      "translate": "advancements.meridian_origin.cultivators.origin.description"
+    }
+  },
+  "criteria": {
+    "chosen": {
+      "trigger": "meridian_origin:chosen"
+    }
+  }
+}

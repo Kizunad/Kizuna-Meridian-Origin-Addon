@@ -1,0 +1,26 @@
+{
+  "weight": 10,
+  "icon": "minecraft:glass_bottle",
+  "talents": [
+    {
+      "type": "meridian_origin_test:gift",
+      "params": {
+        "token": "apprentice"
+      }
+    },
+    {
+      "type": "meridian_origin_test:mark",
+      "params": {
+        "value": 3
+      }
+    }
+  ],
+  "threats": [
+    {
+      "type": "meridian_origin_test:feud",
+      "params": {
+        "stages": 1
+      }
+    }
+  ]
+}

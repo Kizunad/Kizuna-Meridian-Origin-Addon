@@ -1,0 +1,7 @@
+{
+  "criteria": {
+    "chosen": {
+      "trigger": "meridian_origin:chosen"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "weight": 10,
+  "icon": "minecraft:blaze_powder",
+  "group": "spirit",
+  "talents": [
+    {
+      "type": "meridian_origin_test:gift",
+      "params": {
+        "token": "spirit_fire"
+      }
+    },
+    {
+      "type": "meridian_origin_test:mark",
+      "params": {
+        "value": 5
+      }
+    }
+  ],
+  "threats": [
+    {
+      "type": "meridian_origin_test:feud",
+      "params": {
+        "stages": 0
+      }
+    }
+  ]
+}

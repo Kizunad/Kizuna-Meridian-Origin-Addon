@@ -1,0 +1,23 @@
+{
+  "screen.meridian_origin.title": "你是什么人",
+  "screen.meridian_origin.title.chosen": "你的出身",
+  "screen.meridian_origin.talents": "天赋",
+  "screen.meridian_origin.threats": "天生的麻烦",
+  "screen.meridian_origin.none": "无",
+  "screen.meridian_origin.choose": "就是它",
+  "screen.meridian_origin.later": "先不选",
+  "screen.meridian_origin.close": "合上",
+  "screen.meridian_origin.final": "定了就不能改。",
+  "screen.meridian_origin.confirm": "定下「%s」？定了就不能改。",
+  "screen.meridian_origin.confirm.yes": "定下",
+  "screen.meridian_origin.confirm.no": "再想想",
+  "commands.meridian_origin.open.nothing": "眼下没有出身可看",
+  "commands.meridian_origin.no_body": "读不到 %s 的身体",
+  "commands.meridian_origin.show": "%s：选定 %s；抽到 %s",
+  "commands.meridian_origin.show.undecided": "还没选",
+  "commands.meridian_origin.set": "已把 %s 的出身定为 %s",
+  "commands.meridian_origin.set.unknown": "数据包里没有出身 %s",
+  "commands.meridian_origin.offer": "已让 %s 重新抽出身",
+  "advancements.meridian_origin.cultivators.origin.title": "命格",
+  "advancements.meridian_origin.cultivators.origin.description": "各人有各人的来历。定下你的出身，定了就不能改。"
+}

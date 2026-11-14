@@ -1,0 +1,20 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+// 相邻仓库位置、产物路径与第三方版本都由 Framework 的工作区脚本提供（kizunaWorkspace、libs）。
+apply from: new File(rootDir.parentFile, 'Kizuna-Meridian-Mod-Framework/scripts/workspace.gradle')
+
+rootProject.name = 'kizuna-meridian-origin-addon'
+include 'shared', 'server', 'fabric'
+
+// 本仓只依赖 Framework：身体协议和两个身体宿主入口在它的 client、server 库里，网络通道和指令注册点在它的 fabric 里。
+// local.meridian 是框架的本地替换键；完整装配按坐标装入别的模组时，Loom 以框架真实坐标重新加入其传递库，所以真实坐标也登记替换。
+kizunaWorkspace.includeSource('framework', [
+        client: ['local.meridian:client', 'dev.kizuna.meridian:client'],
+        server: ['local.meridian:server', 'dev.kizuna.meridian:server']
+])

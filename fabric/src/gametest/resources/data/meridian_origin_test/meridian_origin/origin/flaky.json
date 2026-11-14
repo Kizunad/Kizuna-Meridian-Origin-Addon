@@ -1,0 +1,10 @@
+{
+  "weight": 1,
+  "icon": "minecraft:cobweb",
+  "talents": [
+    { "type": "meridian_origin_test:gift", "params": { "token": "flaky" } },
+    { "type": "meridian_origin_test:gift", "params": { "token": "steady" } },
+    { "type": "meridian_origin_test:mark" }
+  ],
+  "threats": []
+}

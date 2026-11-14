@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package kizuna.meridian.origin.v1;
+
+option java_package = "dev.kizuna.meridian.origin.protocol.pb";
+option java_outer_classname = "OriginMessages";
+
+// 存在玩家唯一身体的 addon_progress["meridian_origin:origin"]：抽到哪几个出身、选了哪个。
+message OriginRecord {
+  int32 schema_version = 1;
+  // 第一次抽出的候选出身 ID（namespace:path），不重复；抽过以后不再变，除非候选被数据包删掉要补抽。
+  repeated string offered = 2;
+  // 选定的出身 ID；空表示还没选。选定以后游戏里没有办法改。
+  string chosen = 3;
+  // 选定时的世界时钟毫秒。
+  int64 chosen_at_millis = 4;
+  // 已经发过的一次性天赋，写作「<出身 ID>#<talents 下标>」，不重复。
+  repeated string granted = 5;
+  // 第几轮抽选，参与抽选的随机种子。正常游戏里一直是 0；调试指令让玩家重抽时加一，才抽得出另一组。
+  int32 draw_round = 6;
+}
+
+// 服务端 → 客户端：打开出身界面。
+message OriginOffer {
+  // 没选时是候选；选过以后只有选定的那一张。至多 8 张。
+  repeated OriginCard cards = 1;
+  // true 表示已经选定，界面只能看。
+  bool chosen = 2;
+}
+
+// 界面上的一张出身。文字都由客户端按 id 取语言键：
+// origin.<namespace>.<path>.name / .story / .talent.<序号> / .threat.<序号>，序号从 1 起。
+message OriginCard {
+  string id = 1;
+  // 图标的物品 ID。
+  string icon = 2;
+  // 天赋、麻烦各有几行界面文字，各至多 8 行。
+  int32 talent_lines = 3;
+  int32 threat_lines = 4;
+}
+
+// 客户端 → 服务端：选定这个出身。
+message OriginChoice {
+  string id = 1;
+}

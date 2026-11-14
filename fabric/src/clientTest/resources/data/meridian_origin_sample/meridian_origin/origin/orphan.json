@@ -1,0 +1,14 @@
+{
+  "weight": 10,
+  "icon": "minecraft:iron_sword",
+  "talents": [
+    {
+      "type": "meridian_origin_sample:note"
+    }
+  ],
+  "threats": [
+    {
+      "type": "meridian_origin_sample:trouble"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "screen.meridian_origin.title": "Who Are You",
+  "screen.meridian_origin.title.chosen": "Your Origin",
+  "screen.meridian_origin.talents": "Talent",
+  "screen.meridian_origin.threats": "Inborn Trouble",
+  "screen.meridian_origin.none": "None",
+  "screen.meridian_origin.choose": "This One",
+  "screen.meridian_origin.later": "Not Now",
+  "screen.meridian_origin.close": "Close",
+  "screen.meridian_origin.final": "Once chosen, it cannot be changed.",
+  "screen.meridian_origin.confirm": "Settle on \"%s\"? It cannot be changed afterwards.",
+  "screen.meridian_origin.confirm.yes": "Settle",
+  "screen.meridian_origin.confirm.no": "Think Again",
+  "commands.meridian_origin.open.nothing": "There is no origin to show right now",
+  "commands.meridian_origin.no_body": "Cannot read the body of %s",
+  "commands.meridian_origin.show": "%s: chosen %s; offered %s",
+  "commands.meridian_origin.show.undecided": "undecided",
+  "commands.meridian_origin.set": "Set the origin of %s to %s",
+  "commands.meridian_origin.set.unknown": "No origin %s in the data packs",
+  "commands.meridian_origin.offer": "%s will draw origins again",
+  "advancements.meridian_origin.cultivators.origin.title": "Lot in Life",
+  "advancements.meridian_origin.cultivators.origin.description": "Everyone comes from somewhere. Settle on your origin; it cannot be changed."
+}

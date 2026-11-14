@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "meridian_origin_test",
+  "version": "1.0.0",
+  "name": "出身 GameTest",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "dev.kizuna.meridian.origin.fabric.OriginGameTest"
+    ],
+    "meridian_origin": [
+      "dev.kizuna.meridian.origin.fabric.OriginTestTypes"
+    ]
+  },
+  "depends": {
+    "meridian_origin": "*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "meridian_origin_client_test",
+  "version": "1.0.0",
+  "name": "出身界面客户端测试",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.kizuna.meridian.origin.fabric.client.OriginScreenClientTest"],
+    "meridian_origin": ["dev.kizuna.meridian.origin.fabric.client.OriginSampleTypes"]
+  },
+  "depends": {
+    "meridian_origin": "*"
+  }
+}

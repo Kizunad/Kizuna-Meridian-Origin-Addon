@@ -1,0 +1,19 @@
+{
+  "weight": 10,
+  "icon": "minecraft:wheat",
+  "talents": [
+    {
+      "type": "meridian_origin_test:gift",
+      "params": {
+        "token": "farmer"
+      }
+    },
+    {
+      "type": "meridian_origin_test:mark",
+      "params": {
+        "value": 1
+      }
+    }
+  ],
+  "threats": []
+}

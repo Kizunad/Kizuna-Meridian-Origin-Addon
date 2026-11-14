@@ -1,0 +1,10 @@
+{
+  "criteria": {
+    "chosen": {
+      "trigger": "meridian_origin:chosen",
+      "conditions": {
+        "origin": "meridian_origin_test:orphan"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "weight": 10,
+  "icon": "minecraft:water_bucket",
+  "group": "spirit",
+  "talents": [
+    {
+      "type": "meridian_origin_test:gift",
+      "params": {
+        "token": "spirit_water"
+      }
+    },
+    {
+      "type": "meridian_origin_test:mark",
+      "params": {
+        "value": 6
+      }
+    }
+  ],
+  "threats": [
+    {
+      "type": "meridian_origin_test:feud",
+      "params": {
+        "stages": 0
+      }
+    }
+  ]
+}

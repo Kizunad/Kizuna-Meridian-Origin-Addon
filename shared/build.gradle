@@ -1,0 +1,11 @@
+plugins { id 'com.google.protobuf' }
+
+description = '出身的玩家记录和选择界面的收发协议。'
+
+dependencies {
+    api libs.protobuf.java
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${libs.versions.protobuf.java.get()}" }
+}

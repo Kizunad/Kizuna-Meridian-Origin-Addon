@@ -1,0 +1,12 @@
+description = '出身的纯规则：抽选、玩家记录的读写与配置，不碰 Minecraft。'
+
+dependencies {
+    api project(':shared')
+    api 'local.meridian:server'
+    implementation libs.tomlj
+    testImplementation libs.junit4
+}
+
+test {
+    useJUnit()
+}
