@@ -78,6 +78,13 @@ public final class OriginScreenClientTest implements ClientModInitializer {
             throw new IllegalStateException("弹出的不是三张可选的候选：" + screen.offer());
         }
         if (settled()) {
+            // 并排时每张纸都要整张露着：来历可以自己滚，天赋和麻烦不能要滚才看得见。界面开着时聊天栏要收起来。
+            if (screen.sideBySide() && !screen.cardsFit()) {
+                throw new IllegalStateException("并排时纸比窗口高，天赋和麻烦要滚才看得全");
+            }
+            if (!client.gui.hud.isHidden()) {
+                throw new IllegalStateException("界面开着时抬头显示没有收起来，聊天提示会透出来");
+            }
             Files.createDirectories(SHOTS);
             capture(client, "1-offer.png", Stage.OFFERED);
         }
@@ -138,6 +145,8 @@ public final class OriginScreenClientTest implements ClientModInitializer {
         if (client.gui.screen() != null) {
             client.gui.setScreen(null);
             stageTick = ticks;
+        } else if (client.gui.hud.isHidden()) {
+            throw new IllegalStateException("界面合上以后抬头显示没有恢复");
         } else if (settled()) {
             finish(null);
         }
