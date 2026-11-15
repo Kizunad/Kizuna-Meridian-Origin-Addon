@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import dev.kizuna.meridian.origin.protocol.pb.OriginMessages.OriginCard;
 import dev.kizuna.meridian.origin.protocol.pb.OriginMessages.OriginOffer;
 import dev.kizuna.meridian.origin.protocol.pb.OriginMessages.OriginRecord;
+import dev.kizuna.meridian.origin.server.OriginDraw;
 import dev.kizuna.meridian.origin.server.OriginRecords;
 import dev.kizuna.meridian.origin.server.OriginSettings;
 import java.util.HashSet;
@@ -27,6 +28,9 @@ import net.minecraft.server.permissions.PermissionSet;
 /**
  * 出身框架整条链：进服抽候选、退出重进还是那一组、选定只能一次且只能选抽到的、一次性天赋只发一次、
  * 常驻天赋和威胁参数查得到、指令、关掉选择。出身和类型都是测试数据，框架本身不带具体天赋。
+ *
+ * <p>测试跑在完整装配里，别的模组登记的正式出身也在抽选池里。要「选一个测试出身」的用例先按框架同一个抽法算好，
+ * 挑一个抽得到测试出身的玩家 UUID，不靠运气。</p>
  */
 public final class OriginGameTest {
     private static final int TIMEOUT = 300;
@@ -34,6 +38,7 @@ public final class OriginGameTest {
     private static final int RELOG_GAP_TICKS = 3;
     private static final int QUIET_TICKS = 10;
     private static final int OFFER_COUNT = 3;
+    private static final int UUID_ATTEMPTS = 10_000;
     private static final String PREFIX = OriginTestTypes.NAMESPACE + ":";
     private static final Identifier ORPHAN = OriginTestTypes.id("orphan");
     private static final Identifier FARMER = OriginTestTypes.id("farmer");
@@ -76,10 +81,12 @@ public final class OriginGameTest {
     @GameTest(maxTicks = TIMEOUT)
     public void choosingWritesTheRecordGrantsOnceAndNotifies(GameTestHelper context) {
         // 选定：记录写入、一次性天赋发一次、通知一次、进度拿到；退出重进不再弹界面、不重发、不重复通知。
-        UUID id = UUID.randomUUID();
+        UUID id = offeredSteady(context, 1);
         var first = new OriginTestPlayer(context, id);
         await(context, WAIT_TICKS, () -> !first.offers().isEmpty(), "进服没有收到出身候选", () -> {
-            String pick = steady(ids(first.offers().getFirst())).getFirst();
+            List<String> steady = steady(ids(first.offers().getFirst()));
+            context.assertTrue(!steady.isEmpty(), "候选里没有算好的测试出身：" + ids(first.offers().getFirst()));
+            String pick = steady.getFirst();
             try (first) {
                 first.choose(pick);
                 verifyChosen(context, first, pick);
@@ -132,11 +139,12 @@ public final class OriginGameTest {
     @GameTest(maxTicks = TIMEOUT)
     public void onlyOneChoiceFromTheOfferIsAccepted(GameTestHelper context) {
         // 候选以外的、不存在的、写错的、解不开的包都不动记录；选定以后再选另一个候选也不行。
-        UUID id = UUID.randomUUID();
+        UUID id = offeredSteady(context, 2);
         var fixture = new OriginTestPlayer(context, id);
         await(context, WAIT_TICKS, () -> !fixture.offers().isEmpty(), "进服没有收到出身候选", () -> {
             try (fixture) {
                 List<String> offered = steady(ids(fixture.offers().getFirst()));
+                context.assertTrue(offered.size() >= 2, "候选里没有算好的两个测试出身：" + ids(fixture.offers().getFirst()));
                 List<String> drawn = fixture.record().getOfferedList();
                 String foreign = Origins.all().keySet().stream().map(Identifier::toString)
                         .filter(origin -> !drawn.contains(origin)).findFirst().orElseThrow();
@@ -293,8 +301,26 @@ public final class OriginGameTest {
     }
 
     private static List<String> steady(List<String> offered) {
-        // 「第一次发不成」的测试出身也可能被抽到；选定类用例避开它，至少还剩两个。
-        return offered.stream().filter(origin -> !origin.equals(FLAKY.toString())).toList();
+        // 候选里一选就能发成礼物的测试出身：别的模组的正式出身不算，「第一次发不成」的那个也不算。
+        return offered.stream()
+                .filter(origin -> origin.startsWith(PREFIX) && !origin.equals(FLAKY.toString()))
+                .toList();
+    }
+
+    private static UUID offeredSteady(GameTestHelper context, int needed) {
+        // 抽选只看世界种子、玩家 UUID 和轮次：照框架的抽法先算，挑一个第一轮至少抽到 needed 个这种测试出身的 UUID。
+        List<OriginDraw.Candidate> candidates = Origins.all().values().stream()
+                .map(origin -> new OriginDraw.Candidate(origin.id().toString(), origin.weight(), origin.group()))
+                .toList();
+        long worldSeed = context.getLevel().getServer().overworld().getSeed();
+        for (int attempt = 0; attempt < UUID_ATTEMPTS; attempt++) {
+            UUID id = UUID.randomUUID();
+            long seed = OriginDraw.seed(worldSeed, id, 0 /* round */);
+            if (steady(OriginDraw.draw(candidates, OFFER_COUNT, seed)).size() >= needed) {
+                return id;
+            }
+        }
+        throw context.assertionException(Component.literal("找不到第一轮能抽到 " + needed + " 个测试出身的玩家"));
     }
 
     private static boolean done(ServerPlayer player, Identifier advancement) {

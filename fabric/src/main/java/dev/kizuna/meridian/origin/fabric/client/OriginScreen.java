@@ -27,7 +27,8 @@ import net.minecraft.world.item.ItemStack;
  *
  * <p>中性底色，不带主题边框。窗口窄得并排放不下时改成上下排，整列可以滚动。</p>
  *
- * <p>并排时天赋和麻烦两段始终露在纸上：纸放不下时只让来历那一段自己滚。字按中文避头尾折行。
+ * <p>并排时天赋和麻烦两段始终露在纸上：纸放不下时只让来历那一段自己滚；来历缩到最少还是放不下
+ * （天赋和麻烦字多、窗口又矮），也改成上下排。字按中文避头尾折行。
  * 界面开着的时候把原版的聊天栏和别的抬头显示收起来，合上时恢复，免得别的模组的提示盖在纸上。</p>
  */
 public final class OriginScreen extends BaseOwoScreen<FlowLayout> {
@@ -35,6 +36,8 @@ public final class OriginScreen extends BaseOwoScreen<FlowLayout> {
     /** 一张纸的宽度随窗口变：并排时把宽度平分，但不宽过上限；平分下来比下限还窄就改成上下排。 */
     private static final int MAX_CARD_WIDTH = 170;
     private static final int MIN_CARD_WIDTH = 110;
+    /** 窗口够宽、只是太矮才上下排的时候，一张纸可以宽到这么多：字少折几行，一屏看得到的就多。 */
+    private static final int MAX_STACKED_CARD_WIDTH = 320;
     private static final int ICON_SIZE = 16;
     private static final int GAP = 8;
     private static final int PADDING = 8;
@@ -42,7 +45,7 @@ public final class OriginScreen extends BaseOwoScreen<FlowLayout> {
     /** 来历自己滚的时候，右边给滚动条让出的宽度。 */
     private static final int STORY_SCROLLBAR_SPACE = 6;
     /** 来历再挤也至少露这么多行。 */
-    private static final int MIN_STORY_LINES = 3;
+    private static final int MIN_STORY_LINES = 2;
     /** 标签里行与行之间的空隙；量高度和摆标签用同一个数。 */
     private static final int LINE_SPACING = 2;
     private static final int STORY_SCROLLBAR_THICKNESS = 3;
@@ -170,9 +173,19 @@ public final class OriginScreen extends BaseOwoScreen<FlowLayout> {
         int count = offer.getCardsCount();
         int usable = width - 2 * PADDING - SCROLLBAR_SPACE;
         int shared = (usable - (count - 1) * GAP) / count;
-        sideBySide = shared >= MIN_CARD_WIDTH;
-        cardWidth = Math.min(MAX_CARD_WIDTH, sideBySide ? shared : Math.max(MIN_CARD_WIDTH, usable));
-        int fixedRows = sideBySide && !offer.getChosen() ? 2 : 1;
+        boolean wideEnough = shared >= MIN_CARD_WIDTH;
+        arrange(wideEnough, Math.min(MAX_CARD_WIDTH, wideEnough ? shared : Math.max(MIN_CARD_WIDTH, usable)));
+        if (sideBySide && !cardsFit()) {
+            // 来历缩到最少，纸还是比窗口高：并排着天赋和麻烦就得滚才看得见，不如上下排、整列滚。
+            arrange(false /* inRow */, Math.min(MAX_STACKED_CARD_WIDTH, usable));
+        }
+    }
+
+    private void arrange(boolean inRow, int paperWidth) {
+        // 定下并排还是上下排，以及这种排法下一张纸多宽、留给纸多高。
+        sideBySide = inRow;
+        cardWidth = paperWidth;
+        int fixedRows = inRow && !offer.getChosen() ? 2 : 1;
         room = height - fixedRows * (BUTTON_HEIGHT + GAP) - font.lineHeight - GAP - 2 * PADDING;
     }
 
