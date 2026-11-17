@@ -4,12 +4,17 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import dev.kizuna.meridian.origin.fabric.OriginNetworking;
 import dev.kizuna.meridian.origin.protocol.pb.OriginMessages.OriginChoice;
 import dev.kizuna.meridian.origin.protocol.pb.OriginMessages.OriginOffer;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 
 /** 出身的客户端入口：收到候选就打开出身界面，玩家选定后把出身 ID 发回服务端。 */
 public final class OriginClient implements ClientModInitializer {
+    private static final Logger LOGGER = System.getLogger("meridian_origin");
+    private static final String SELECTION_OPENED = "MERIDIAN_ORIGIN_SELECTION_OPENED";
+
     @Override
     public void onInitializeClient() {
         // 26.2 的收包回调已在客户端主线程上，界面直接打开；解不开的包丢弃。
@@ -18,6 +23,10 @@ public final class OriginClient implements ClientModInitializer {
                 OriginOffer offer = OriginOffer.parseFrom(payload.bytes());
                 if (offer.getCardsCount() > 0) {
                     Minecraft.getInstance().gui.setScreen(new OriginScreen(offer, OriginClient::choose));
+                    if (!offer.getChosen()) {
+                        // 只记录选择页确实打开，不把候选内容写进日志。
+                        LOGGER.log(Level.INFO, SELECTION_OPENED);
+                    }
                 }
             } catch (InvalidProtocolBufferException invalid) {
                 // 协议不对的包不开界面。
