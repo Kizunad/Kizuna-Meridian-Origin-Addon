@@ -3,7 +3,13 @@
   "id": "meridian_origin",
   "version": "${version}",
   "name": "Kizuna's Meridian Origin",
-  "description": "出身：第一次进世界时抽几个出身、选定一个，定了不能改；天赋和天生的麻烦由各附属登记实现",
+  "contact": {
+    "homepage": "https://github.com/Kizunad/Kizuna-Meridian-Origin-Addon",
+    "sources": "https://github.com/Kizunad/Kizuna-Meridian-Origin-Addon",
+    "issues": "https://github.com/Kizunad/Kizuna-Meridian-Origin-Addon/issues"
+  },
+  "icon": "assets/meridian_origin/icon.png",
+  "description": "Choose a permanent origin on your first visit to a world, with talents and troubles supplied by the installed add-ons.\n初次进入世界时选定出身，获得附属提供的天赋，也要面对随之而来的麻烦。",
   "authors": ["Kizunad"],
   "license": "PolyForm-Noncommercial-1.0.0",
   "environment": "*",
