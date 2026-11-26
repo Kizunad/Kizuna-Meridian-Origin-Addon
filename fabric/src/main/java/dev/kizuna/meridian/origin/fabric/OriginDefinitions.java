@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -21,10 +22,13 @@ import net.minecraft.server.packs.resources.Resource;
  */
 final class OriginDefinitions {
     private static final String DIRECTORY = "meridian_origin/origin";
+    private static final String RETIRED = "meridian_origin/retired_origin";
     private static final String JSON_SUFFIX = ".json";
     private static final Logger LOGGER = System.getLogger("meridian_origin");
     private final OriginParser parser;
-    private Map<Identifier, Origin> loaded = Map.of();
+    private record Catalog(Map<Identifier, Origin> origins, Set<String> retired) { }
+
+    private Catalog loaded = new Catalog(Map.of(), Set.of());
 
     OriginDefinitions(OriginTypes types) {
         this.parser = new OriginParser(types);
@@ -45,21 +49,25 @@ final class OriginDefinitions {
     }
 
     void stop() {
-        loaded = Map.of();
+        loaded = new Catalog(Map.of(), Set.of());
     }
 
     Map<Identifier, Origin> all() {
         // 按出身 ID 排序，补全和调试输出的顺序固定。
-        return loaded;
+        return loaded.origins();
     }
 
-    private Map<Identifier, Origin> load(MinecraftServer server) {
+    boolean retired(String chosen) {
+        return loaded.retired().contains(chosen);
+    }
+
+    private Catalog load(MinecraftServer server) {
         // 逐份解析；哪一份不对，报错里带它的文件 ID。
         Map<Identifier, Resource> files = server.getResourceManager().listResources(DIRECTORY,
                 id -> id.getPath().endsWith(JSON_SUFFIX));
         Map<Identifier, Origin> origins = new TreeMap<>();
         for (Map.Entry<Identifier, Resource> file : files.entrySet()) {
-            Identifier id = originId(file.getKey());
+            Identifier id = originId(DIRECTORY, file.getKey());
             try (Reader reader = file.getValue().openAsReader()) {
                 JsonElement json = JsonParser.parseReader(reader);
                 Origin origin = parser.parse(id, json);
@@ -72,13 +80,32 @@ final class OriginDefinitions {
                         invalid);
             }
         }
-        return Map.copyOf(new LinkedHashMap<>(origins));
+        return new Catalog(Map.copyOf(origins), retired(server, origins));
     }
 
-    private static Identifier originId(Identifier file) {
-        // meridian_origin/origin/<名字>.json → <名字>。
+    private static Set<String> retired(MinecraftServer server, Map<Identifier, Origin> origins) {
+        // 每个空对象按资源路径声明一个退役 ID，同一 ID 不能同时作为候选。
+        var files = server.getResourceManager().listResources(RETIRED, id -> id.getPath().endsWith(JSON_SUFFIX));
+        Set<String> ids = new HashSet<>();
+        for (var file : files.entrySet()) {
+            Identifier id = originId(RETIRED, file.getKey());
+            try (Reader reader = file.getValue().openAsReader()) {
+                var marker = JsonParser.parseReader(reader);
+                if (!marker.isJsonObject() || marker.getAsJsonObject().size() != 0 || origins.containsKey(id)) {
+                    throw new IllegalArgumentException("声明须为空对象且出身不能同时存在：" + id);
+                }
+                ids.add(id.toString());
+            } catch (IOException | RuntimeException invalid) {
+                throw new IllegalArgumentException("退役出身 " + file.getKey(), invalid);
+            }
+        }
+        return Set.copyOf(ids);
+    }
+
+    private static Identifier originId(String directory, Identifier file) {
+        // 资源相对于出身或退役目录的路径就是出身名。
         String path = file.getPath();
-        String name = path.substring(DIRECTORY.length() + 1, path.length() - JSON_SUFFIX.length());
+        String name = path.substring(directory.length() + 1, path.length() - JSON_SUFFIX.length());
         return Identifier.fromNamespaceAndPath(file.getNamespace(), name);
     }
 }

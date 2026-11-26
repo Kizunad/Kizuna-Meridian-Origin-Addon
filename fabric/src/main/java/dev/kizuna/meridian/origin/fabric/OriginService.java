@@ -127,7 +127,12 @@ final class OriginService {
         // 身体读到了：没选的补齐候选并弹界面，选过的补发没发成的一次性天赋。
         Optional<OriginRecord> record;
         try {
-            record = update(player, current -> offered(player, current));
+            record = update(player, current -> {
+                if (definitions.retired(current.getChosen())) {
+                    return offered(player, OriginRecords.redrawn(current));
+                }
+                return offered(player, current);
+            });
         } catch (RuntimeException failure) {
             LOGGER.log(Level.ERROR, "玩家 " + player.getScoreboardName() + " 的出身记录读写失败，这次进服不处理出身", failure);
             return true;

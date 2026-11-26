@@ -48,6 +48,77 @@ public final class OriginGameTest {
     private static final String DEBUG = "meridian debug origin ";
 
     @GameTest(maxTicks = TIMEOUT)
+    public void retiredChoiceRedrawsOnlyOnce(GameTestHelper context) {
+        // 旧角色保留已发天赋，收到新候选并完成选择后，再次进服不弹窗。
+        String retired = PREFIX + "retired";
+        var id = UUID.randomUUID();
+        seedOldChoice(context, id, retired, () -> {
+            var second = new OriginTestPlayer(context, id);
+            await(context, WAIT_TICKS, () -> !second.offers().isEmpty(), "退役出身没有重抽", () -> {
+                var offer = second.offers().getFirst();
+                String pick = offer.getCards(0).getId();
+                try (second) {
+                    var record = second.record();
+                    var candidates = ids(offer);
+                    context.assertTrue(record.getDrawRound() == 1 && record.getChosen().isEmpty()
+                            && record.getOfferedList().equals(candidates) && !candidates.contains(retired),
+                            "重抽没有保存新一轮候选");
+                    context.assertTrue(record.getGrantedList().contains(OriginRecords.grantKey(retired, 0)),
+                            "重抽丢失旧授予记录");
+                    second.choose(pick);
+                }
+                verifyReturn(context, id, pick);
+            });
+        });
+    }
+
+    private static void verifyReturn(GameTestHelper context, UUID id, String pick) {
+        // 等待正式登录处理完再查包和记录。
+        var third = new OriginTestPlayer(context, id);
+        await(context, WAIT_TICKS, () -> OriginTestTypes.READY.get(id).size() >= 3, "未完成第三次进服", () -> {
+            try (third) {
+                var saved = third.record();
+                context.assertTrue(third.offers().isEmpty() && saved.getChosen().equals(pick)
+                        && saved.getDrawRound() == 1, "退役重选后再次进服又弹窗");
+            }
+            context.succeed();
+        });
+    }
+
+    @GameTest(maxTicks = TIMEOUT)
+    public void missingDefinitionKeepsChosenRecord(GameTestHelper context) {
+        // 临时缺包不能抹掉旧选择。
+        String missing = PREFIX + "temporarily_missing";
+        var id = UUID.randomUUID();
+        seedOldChoice(context, id, missing, () -> {
+            var second = new OriginTestPlayer(context, id);
+            await(context, WAIT_TICKS, () -> OriginTestTypes.READY.get(id).size() >= 2, "未完成第二次进服", () -> {
+                try (second) {
+                    var saved = second.record();
+                    context.assertTrue(second.offers().isEmpty() && saved.getChosen().equals(missing)
+                            && saved.getDrawRound() == 0, "临时缺定义也触发了退役重选");
+                }
+                context.succeed();
+            });
+        });
+    }
+
+    private static void seedOldChoice(GameTestHelper context, UUID id, String old, Runnable relog) {
+        // 在正式玩家身体写入旧版记录，断线保存后用相同身份重登。
+        var first = new OriginTestPlayer(context, id);
+        await(context, WAIT_TICKS, () -> !first.offers().isEmpty(), "没有初始候选", () -> {
+            try (first) {
+                var bodies = new OriginBodies();
+                var body = bodies.read(first.player).orElseThrow();
+                var selected = OriginRecords.assigned(first.record(), old, 1);
+                var granted = OriginRecords.granted(selected, OriginRecords.grantKey(old, 0));
+                bodies.write(first.player, body, granted);
+            }
+            context.runAfterDelay(RELOG_GAP_TICKS, relog);
+        });
+    }
+
+    @GameTest(maxTicks = TIMEOUT)
     public void joiningPlayerIsOfferedThreeOriginsAndTheSameThreeAfterRelog(GameTestHelper context) {
         // 进服收到恰好一份候选：三个不同的出身、同组至多一个，和身体上的记录一致；退出重进还是这三个。
         UUID id = UUID.randomUUID();

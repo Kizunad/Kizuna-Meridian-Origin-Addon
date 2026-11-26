@@ -4,5 +4,5 @@
 selection = true
 # 一次抽几个给玩家挑（1～8）。能抽的出身不够时有几个给几个。
 offer_count = 3
-# 不参与抽选的出身 ID，例如 ["meridian_humanoid:orphan"]。已经选了它的玩家照旧。
+# 不参与抽选的出身 ID，例如 ["meridian_humanoid:reborn"]。已经选了它的玩家照旧。
 disabled = []
